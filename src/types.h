@@ -1,6 +1,13 @@
 #ifndef _TYPES_H_
 #define _TYPES_H_
 
+typedef struct Data
+{
+  int len;
+  float *numeric;
+  char **string;
+} Data;
+
 typedef struct Cell
 {
   double* item;

@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
-n = 100
+n = int(sys.argv[1])
 
-csv = np.genfromtxt ('ACA.out', delimiter="")
+csv = np.genfromtxt (sys.argv[2], delimiter="")
 
 aa = np.zeros((n,n))
-
 for i in range(n):
   for j in range(n):
     aa[i,j] = csv[i*n + j]

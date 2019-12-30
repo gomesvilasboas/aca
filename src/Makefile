@@ -1,5 +1,5 @@
 # CC=gcc
-FLAGS=-lm -fopenmp -O3
+FLAGS=-lm -fopenmp -O3 -Wimplicit-function-declaration -ffast-math -march=native
 DEBUGFLAGS=-g
 RM=rm -f
 
@@ -7,11 +7,13 @@ EXEC=ACA
 
 .PHONY : all clean debug
 
-all: $(EXEC).c
-	$(CC) $(FLAGS) $(EXEC).c -o $(EXEC)
+all:
+	$(CC) $(FLAGS) ACA.c -c
+	$(CC) $(FLAGS) read_csv.c -c
+	$(CC) $(FLAGS) ACA.o read_csv.o -o $(EXEC)
 
 debug: $(EXEC).c
 	$(CXX) $(FLAGS) $(DEBUGFLAGS) $(EXEC).c -o $(EXEC)
 
 clean:
-	$(RM) $(EXEC).o $(EXEC)
+	$(RM) *.o $(EXEC)
