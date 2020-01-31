@@ -20,6 +20,7 @@ typedef struct Ant
   int x, y;
   double* item;
   int item_id;
+  int veloc;
 } Ant;
 
 #endif

@@ -63,7 +63,7 @@ Data *read_csv(char *filename, int *n_items)
         data[data_count].numeric[numeric_count] = atof(content);
         numeric_count++;
       }
-      else
+      /*else
       {
         data[data_count].string = (char**)realloc(data[data_count].string, sizeof(char));
         data[data_count].string[string_count] = (char*)malloc(sizeof(content));
@@ -72,7 +72,7 @@ Data *read_csv(char *filename, int *n_items)
         //printf("%s, ", data[data_count].string[string_count]);
         string_count++;
         //string_count_total++;
-      }
+      }*/
       content = strtok(NULL, " ");
     }
     data[data_count].len = numeric_count;
