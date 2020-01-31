@@ -8,7 +8,9 @@ Authors: Fabricio Vilasboas, Calebe Bianchini, Leandro Nunes
 #include <math.h>
 #include <string.h>
 #include <time.h>
+#include <omp.h>
 #include "types.h"
+#include "read_csv.h"
 
 int cell_has_item(const int x, const int y, Cell **B)
 {
@@ -45,10 +47,10 @@ double euclidian_distance(double *item1, double *item2, const int n)
   return sqrt(sum/(double)n);
 }
 
-double f(Cell **B, double *item, const int x, const int y, const int nb, const int m, const int s_items)
+double f(Cell **B, double *item, const int x, const int y, const int nb, const int m, const int s_items, const double a)
 {
   int i, j;
-  double sum = 0.0, cont = 0.0, a = 0.001, r;
+  double sum = 0.0, r;
   for (i = x - nb; i < x + nb; i++)
     for (j = y - nb; j < y + nb; j++)
     {
@@ -75,7 +77,7 @@ void ant_dynamic(Ant *ant, Cell **B, const int m, const int nb, const int s_item
   //Probability of the ant drop the item
   if (ant_has_item(ant) == 1 && cell_has_item(ant->x, ant->y, B) == 0)
   {
-    fi = f(B, ant->item, ant->x, ant->y, nb, m, s_items);
+    fi = f(B, ant->item, ant->x, ant->y, nb, m, s_items, a);
     //printf("fi = %.2f\n", fi);
     pd = (fi < kd) ? 2.0*fi : 1.0;
     //printf("pd = %.2f\n", pd);
@@ -97,7 +99,7 @@ void ant_dynamic(Ant *ant, Cell **B, const int m, const int nb, const int s_item
   // Probability of the ant pick the item
   if (ant_has_item(ant) == 0 && cell_has_item(ant->x, ant->y, B) == 1)
   {
-    fi = f(B, B[ant->x][ant->y].item, ant->x, ant->y, nb, m, s_items);
+    fi = f(B, B[ant->x][ant->y].item, ant->x, ant->y, nb, m, s_items, a);
     //printf("fi = %.2f\n", fi);
     pp = powf(kp / (kp + fi), 2);
     //printf("pp = %.2f\n", pp);
@@ -191,16 +193,23 @@ void simulte(Ant *ants, Cell **B, const int m, const int n_ants, const int nb,
             const double a, const double pick, const double drop)
 {
   int it, ant;
+  double ant_st, it_st, time = 0;
 
   for (it = 0; it < max_it; it++)
   {
+    //it_st = omp_get_wtime();
     //#pragma omp parallel for
     for (ant = 0; ant < n_ants; ant++)
     {
+      //ant_st = omp_get_wtime();
       move_ant(&ants[ant], B, m, nb, s_items, kp, kd, a, pick, drop);
+      //printf("Ant %d time: %f\n", omp_get_wtime() - ant_st);
       //fprintf(stdout, "%d,%d,%d,%d,%d\n", it, ant, ants[ant].x, ants[ant].y, ants[ant].item_id);
     }
+    //time += (omp_get_wtime() - it_st);
+    //printf("Iteration %d time: %f\n", omp_get_wtime() - it_st);
   }
+  //printf("Average execution time: %f\n", time/max_it);
 }
 
 Cell** grid_allocation(const int m)
@@ -224,14 +233,15 @@ Cell** grid_allocation(const int m)
 
 double** items_allocation(char *filename, int *n_items, int *s_items)
 {
-  double **items;
+  double **items, st;
   int i, j;
 
+  //st = omp_get_wtime();
   Data *data = read_csv(filename, n_items);
+  //printf("Reading time: %f\n", omp_get_wtime() - st);
 
   *s_items = data[0].len;
   size_t size = *s_items*sizeof(double);
-
   items = (double**)malloc(*n_items * sizeof(double*));
 
   for (i = 0; i < *n_items; i++)
@@ -332,6 +342,7 @@ int main (int argc, char **argv)
   int m = atoi(argv[2]), n_ants = atoi(argv[3]), max_it = atoi(argv[4]), nb = atoi(argv[5]), n_items, s_items;
   double kp = atof(argv[6]), kd = atof(argv[7]), a = atof(argv[8]), pick = atof(argv[9]), drop = atof(argv[10]);
   double **items;
+  double st;
   Cell **B;
   Ant *ants = (Ant*)malloc(sizeof(Ant) * n_ants);
   srand(1);//time(NULL));
