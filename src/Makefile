@@ -1,5 +1,5 @@
-# CC=gcc
-FLAGS=-lm -fopenmp -O3 -Wimplicit-function-declaration -ffast-math -march=native
+CC=gcc
+FLAGS=-lm -fopenmp -O3 -Wimplicit-function-declaration -Wunused-result -ffast-math -march=native
 DEBUGFLAGS=-g
 RM=rm -f
 
