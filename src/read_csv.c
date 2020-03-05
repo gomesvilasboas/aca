@@ -44,7 +44,7 @@ Data *read_csv(char *filename, int *n_items)
   FILE *file;
   char *line = NULL, *content = NULL;
   size_t len, string_size = sizeof(char);
-  ssize_t size;
+  __ssize_t size;
 
   unreference(data, n);
 
