@@ -12,13 +12,13 @@
 #include "read_csv.h"
 
 int ant_has_item(Ant *ant);
-double f(Cell **grid, double *items, const int x, const int y, const int nb, const int m, const int elements_per_item, const double a);
-void ant_dynamic(Ant *ant, Cell **grid, const int m, const int nb, const int elements_per_item,
-                const double kp, const double kd, const double a,
-                const double pick, const double drop);
-void move_ant(Ant *ant, Cell **grid, const int m, const int nb, const int elements_per_item,
-                const double kp, const double kd, const double a, const double pick,
-                const double drop);
+double f(Cell **grid, Item *items, Ant *ant, const int nb, const int m, const int elements_per_item, const double a);
+void ant_dynamic(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
+                 const int elements_per_item, const double kp, const double kd,
+                 const double a, const double pick, const double drop);
+void move_ant(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
+              const int elements_per_item, const double kp, const double kd,
+              const double a, const double pick, const double drop);
 double manhattan_distance(double *item_value1, double *item_value2, const int n);
 double euclidian_distance(double *item_Value1, double *item_value2, const int n);
 int cell_has_item(const int x, const int y, Cell **grid);

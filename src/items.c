@@ -22,7 +22,7 @@ Item* items_allocation(char *filename, int *number_of_items, int *elemts_per_ite
    return items;
 }
 
-//void items_group(Cell **grid, int m)
+//void items_group(Cell **grid, Item *items, int m)
 //{
 //  int i, j, group = 0;
 //

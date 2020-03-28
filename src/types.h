@@ -17,14 +17,20 @@ typedef struct Item
 
 typedef struct Cell
 {
-  Item item;
+  int item_id;
   int has_ant;
 } Cell;
 
+typedef struct Position
+{
+  int x;
+  int y;
+} Position;
+
 typedef struct Ant
 {
-  int x, y;
-  Item item;
+  Position position;
+  int item_id;
   int veloc;
 } Ant;
 

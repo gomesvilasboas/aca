@@ -5,9 +5,9 @@ Authors: Fabricio Vilasboas, Calebe Bianchini, Leandro Nunes
 
 #include "aca.h"
 
-void simulate(Ant *ants, Cell **B, const int m, const int n_ants, const int nb,
-            const int s_items, const int max_it, const double kp, const double kd,
-            const double a, const double pick, const double drop)
+void simulate(Ant *ants, Cell **B, Item *items, const int m, const int number_of_ants,
+              const int nb, const int elements_per_item, const int max_it, const double kp,
+              const double kd, const double a, const double pick, const double drop)
 {
   int it, ant;
   double ant_st, it_st, time = 0;
@@ -16,10 +16,10 @@ void simulate(Ant *ants, Cell **B, const int m, const int n_ants, const int nb,
   {
     //it_st = omp_get_wtime();
     //#pragma omp parallel for
-    for (ant = 0; ant < n_ants; ant++)
+    for (ant = 0; ant < number_of_ants; ant++)
     {
       //ant_st = omp_get_wtime();
-      move_ant(&ants[ant], B, m, nb, s_items, kp, kd, a, pick, drop);
+      move_ant(&ants[ant], B, items, m, nb, elements_per_item, kp, kd, a, pick, drop);
       //printf("Ant %d time: %f\n", omp_get_wtime() - ant_st);
       //fprintf(stdout, "%d,%d,%d,%d,%d\n", it, ant, ants[ant].x, ants[ant].y, ants[ant].item_id);
     }
@@ -55,13 +55,12 @@ int main (int argc, char **argv)
   int m = atoi(argv[2]), number_of_ants = atoi(argv[3]), max_it = atoi(argv[4]), nb = atoi(argv[5]), number_of_items, elements_per_item;
   double kp = atof(argv[6]), kd = atof(argv[7]), a = atof(argv[8]), pick = atof(argv[9]), drop = atof(argv[10]);
   double st;
-  // Ao inves de copiar o item para a formiga ou a grade, indicar apenas o indice de acesso dentro da estrutura
   Item *items = items_allocation(argv[1], &number_of_items, &elements_per_item);
   Cell **grid = grid_allocation(m);
   Ant *ants = (Ant*)malloc(number_of_ants * sizeof(Ant));
   srand(1);//time(NULL));
   initialize(m, number_of_ants, number_of_items, elements_per_item, grid, ants, items);
-  simulate(ants, grid, m, number_of_ants, nb, elements_per_item, max_it, kp, kd, a, pick, drop);
+  simulate(ants, grid, items, m, number_of_ants, nb, elements_per_item, max_it, kp, kd, a, pick, drop);
   grid_print(grid, m);
 
   return 0;
