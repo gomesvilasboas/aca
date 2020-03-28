@@ -8,18 +8,23 @@ typedef struct Data
   char **string;
 } Data;
 
+typedef struct Item
+{
+  double *value;
+  int group;
+  int item_id;
+} Item;
+
 typedef struct Cell
 {
-  double* item;
-  int item_id;
+  Item item;
   int has_ant;
 } Cell;
 
 typedef struct Ant
 {
   int x, y;
-  double* item;
-  int item_id;
+  Item item;
   int veloc;
 } Ant;
 

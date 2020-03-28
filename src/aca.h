@@ -12,19 +12,19 @@
 #include "read_csv.h"
 
 int ant_has_item(Ant *ant);
-double f(Cell **B, double *item, const int x, const int y, const int nb, const int m, const int s_items, const double a);
-void ant_dynamic(Ant *ant, Cell **B, const int m, const int nb, const int s_items,
+double f(Cell **grid, double *items, const int x, const int y, const int nb, const int m, const int elements_per_item, const double a);
+void ant_dynamic(Ant *ant, Cell **grid, const int m, const int nb, const int elements_per_item,
                 const double kp, const double kd, const double a,
                 const double pick, const double drop);
-void move_ant(Ant *ant, Cell **B, const int m, const int nb, const int s_items,
+void move_ant(Ant *ant, Cell **grid, const int m, const int nb, const int elements_per_item,
                 const double kp, const double kd, const double a, const double pick,
                 const double drop);
-double manhattan_distance(double *item1, double *item2, const int n);
-double euclidian_distance(double *item1, double *item2, const int n);
-int cell_has_item(const int x, const int y, Cell **B);
+double manhattan_distance(double *item_value1, double *item_value2, const int n);
+double euclidian_distance(double *item_Value1, double *item_value2, const int n);
+int cell_has_item(const int x, const int y, Cell **grid);
 Cell** grid_allocation(const int m);
-double** items_allocation(char *filename, int *n_items, int *s_items);
-void initialize(const int m, const int n_ants, const int n_items, const int s_items, Cell **B, Ant *ants, double **items);
-void grid_print(Cell **B, const int m);
+Item* items_allocation(char *filename, int *number_of_items, int *elements_per_item);
+void initialize(const int m, const int number_of_ants, const int number_of_items, const int elements_per_item, Cell **grid, Ant *ants, Item *items);
+void grid_print(Cell **grid, const int m);
 
 #endif

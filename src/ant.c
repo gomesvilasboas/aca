@@ -2,11 +2,11 @@
 
 int ant_has_item(Ant *ant)
 {
-  int res = (ant->item == NULL) ? 0 : 1;
+  int res = (ant->item.value == NULL) ? 0 : 1;
   return res;
 }
 
-double f(Cell **B, double *item, const int x, const int y, const int nb, const int m, const int s_items, const double a)
+double f(Cell **grid, double *item_value, const int x, const int y, const int nb, const int m, const int elements_per_item, const double a)
 {
   int i, j;
   double sum = 0.0, r;
@@ -15,10 +15,10 @@ double f(Cell **B, double *item, const int x, const int y, const int nb, const i
     {
       if (i >= 0 && i < m && j >= 0 && j < m)
       {
-        if (cell_has_item(i, j, B) == 1)
+        if (cell_has_item(i, j, grid) == 1)
         {
-          sum += 1 - (euclidian_distance(item, B[i][j].item, s_items) / a);
-          //sum += manhattan_distance(item, B[i][j].item, s_items);
+          sum += 1 - (euclidian_distance(item_value, grid[i][j].item.value, elements_per_item) / a);
+          //sum += manhattan_distance(item_value, grid[i][j].item, s_items);
         }
       }
     }
@@ -26,17 +26,17 @@ double f(Cell **B, double *item, const int x, const int y, const int nb, const i
     return (r > 0) ? r : 0;
 }
 
-void ant_dynamic(Ant *ant, Cell **B, const int m, const int nb, const int s_items,
+void ant_dynamic(Ant *ant, Cell **grid, const int m, const int nb, const int elements_per_item,
                  const double kp, const double kd, const double a,
                  const double pick, const double drop)
 {
   double pp, pd, fi;
-  size_t size = sizeof(double)*s_items;
+  size_t size = sizeof(double)*elements_per_item;
 
   //Probability of the ant drop the item
-  if (ant_has_item(ant) == 1 && cell_has_item(ant->x, ant->y, B) == 0)
+  if (ant_has_item(ant) == 1 && cell_has_item(ant->x, ant->y, grid) == 0)
   {
-    fi = f(B, ant->item, ant->x, ant->y, nb, m, s_items, a);
+    fi = f(grid, ant->item.value, ant->x, ant->y, nb, m, elements_per_item, a);
     //printf("fi = %.2f\n", fi);
     pd = (fi < kd) ? 2.0*fi : 1.0;
     //printf("pd = %.2f\n", pd);
@@ -44,33 +44,33 @@ void ant_dynamic(Ant *ant, Cell **B, const int m, const int nb, const int s_item
     if (pd >= drop)
     {
       //printf("Largou -> %d\n", ant->item_id);
-      B[ant->x][ant->y].item = (double*)malloc(size);
-      memcpy(B[ant->x][ant->y].item, ant->item, size);
-      free(ant->item);
-      ant->item = NULL;
-      B[ant->x][ant->y].item_id = ant->item_id;
-      ant->item_id = -1;
-      //fprintf(stdout, "\tDroped item %d on cell [%d, %d] with pd = %f.\n", B[ant->x][ant->y].item_id, ant->x, ant->y, pd);
+      grid[ant->x][ant->y].item.value = (double*)malloc(size);
+      memcpy(grid[ant->x][ant->y].item.value, ant->item.value, size);
+      free(ant->item.value);
+      ant->item.value = NULL;
+      grid[ant->x][ant->y].item.item_id = ant->item.item_id;
+      ant->item.item_id = -1;
+      //fprintf(stdout, "\tDroped item %d on cell [%d, %d] with pd = %f.\n", grid[ant->x][ant->y].item_id, ant->x, ant->y, pd);
     }
     return;
   }
 
   // Probability of the ant pick the item
-  if (ant_has_item(ant) == 0 && cell_has_item(ant->x, ant->y, B) == 1)
+  if (ant_has_item(ant) == 0 && cell_has_item(ant->x, ant->y, grid) == 1)
   {
-    fi = f(B, B[ant->x][ant->y].item, ant->x, ant->y, nb, m, s_items, a);
+    fi = f(grid, grid[ant->x][ant->y].item.value, ant->x, ant->y, nb, m, elements_per_item, a);
     //printf("fi = %.2f\n", fi);
     pp = powf(kp / (kp + fi), 2);
     //printf("pp = %.2f\n", pp);
     //fprintf(stderr, "\tPick; pp: %f\n", pp);
     if (pp >= pick)
     {
-      ant->item = (double*)malloc(size);
-      memcpy(ant->item, B[ant->x][ant->y].item, size);
-      free(B[ant->x][ant->y].item);
-      B[ant->x][ant->y].item = NULL;
-      ant->item_id = B[ant->x][ant->y].item_id;
-      B[ant->x][ant->y].item_id = -1;
+      ant->item.value = (double*)malloc(size);
+      memcpy(ant->item.value, grid[ant->x][ant->y].item.value, size);
+      free(grid[ant->x][ant->y].item.value);
+      grid[ant->x][ant->y].item.value = NULL;
+      ant->item.item_id = grid[ant->x][ant->y].item.item_id;
+      grid[ant->x][ant->y].item.item_id = -1;
       //printf("Pegou -> %d\n", ant->item_id);
       //fprintf(stdout, "\tPicked item %d on cell [%d, %d] with pp = %f.\n", ant->item_id, ant->x, ant->y, pp);
     }
@@ -78,7 +78,7 @@ void ant_dynamic(Ant *ant, Cell **B, const int m, const int nb, const int s_item
   }
 }
 
-void move_ant(Ant *ant, Cell **B, const int m, const int nb, const int s_items,
+void move_ant(Ant *ant, Cell **grid, const int m, const int nb, const int elements_per_item,
               const double kp, const double kd, const double a, const double pick,
               const double drop)
 {
@@ -94,11 +94,11 @@ void move_ant(Ant *ant, Cell **B, const int m, const int nb, const int s_items,
         stuck += 1;
         if ((ant->x - step) >= 0)
         {
-          if (B[ant->x-step][ant->y].has_ant == 0)
+          if (grid[ant->x-step][ant->y].has_ant == 0)
           {
-            B[ant->x][ant->y].has_ant = 0;
+            grid[ant->x][ant->y].has_ant = 0;
             ant->x -= step;
-            B[ant->x][ant->y].has_ant = 1;
+            grid[ant->x][ant->y].has_ant = 1;
             moved = 1;
           }
         }
@@ -107,11 +107,11 @@ void move_ant(Ant *ant, Cell **B, const int m, const int nb, const int s_items,
         stuck += 1;
         if ((ant->x + step) < m)
         {
-          if (B[ant->x+step][ant->y].has_ant == 0)
+          if (grid[ant->x+step][ant->y].has_ant == 0)
           {
-            B[ant->x][ant->y].has_ant = 0;
+            grid[ant->x][ant->y].has_ant = 0;
             ant->x += step;
-            B[ant->x][ant->y].has_ant = 1;
+            grid[ant->x][ant->y].has_ant = 1;
             moved = 1;
           }
         }
@@ -120,11 +120,11 @@ void move_ant(Ant *ant, Cell **B, const int m, const int nb, const int s_items,
         stuck += 1;
         if ((ant->y + step) < m)
         {
-          if (B[ant->x][ant->y+1].has_ant == 0)
+          if (grid[ant->x][ant->y+1].has_ant == 0)
           {
-            B[ant->x][ant->y].has_ant = 0;
+            grid[ant->x][ant->y].has_ant = 0;
             ant->y += step;
-            B[ant->x][ant->y].has_ant = 1;
+            grid[ant->x][ant->y].has_ant = 1;
             moved = 1;
           }
         }
@@ -133,16 +133,16 @@ void move_ant(Ant *ant, Cell **B, const int m, const int nb, const int s_items,
         stuck += 1;
         if ((ant->y - step) >= 0)
         {
-          if (B[ant->x][ant->y-step].has_ant == 0)
+          if (grid[ant->x][ant->y-step].has_ant == 0)
           {
-            B[ant->x][ant->y].has_ant = 0;
+            grid[ant->x][ant->y].has_ant = 0;
             ant->y -= step;
-            B[ant->x][ant->y].has_ant = 1;
+            grid[ant->x][ant->y].has_ant = 1;
             moved = 1;
           }
         }
       break;
     }
-    ant_dynamic(ant, B, m, nb, s_items, kp, kd, a, pick, drop);
+    ant_dynamic(ant, grid, m, nb, elements_per_item, kp, kd, a, pick, drop);
   } while(moved == 0 && stuck <= 4);
 }

@@ -44,29 +44,25 @@ int main (int argc, char **argv)
     B: grid of cells;
     ants: vector of ants;
     items: matrix of items;
-    n_items: number of items;
-    s_items: number of elementes per item.
-    pick:
-    drop:
+    number_of_items: number of items;
+    elemts_per_items: number of elementes per item.
+    pick: probability of pick an element
+    drop: probability of drop an element
   */
 
   // A razão de proporcionalidade de m -> n_ants e n_items é de uma ordem de grandeza.
-  int m = atoi(argv[2]), n_ants = atoi(argv[3]), max_it = atoi(argv[4]), nb = atoi(argv[5]), n_items, s_items;
+  // A grade nao necessariamente tem que ser quadrada. Fazer essa alteracao
+  int m = atoi(argv[2]), number_of_ants = atoi(argv[3]), max_it = atoi(argv[4]), nb = atoi(argv[5]), number_of_items, elements_per_item;
   double kp = atof(argv[6]), kd = atof(argv[7]), a = atof(argv[8]), pick = atof(argv[9]), drop = atof(argv[10]);
-  double **items;
   double st;
-  Cell **B;
-  Ant *ants = (Ant*)malloc(sizeof(Ant) * n_ants);
+  // Ao inves de copiar o item para a formiga ou a grade, indicar apenas o indice de acesso dentro da estrutura
+  Item *items = items_allocation(argv[1], &number_of_items, &elements_per_item);
+  Cell **grid = grid_allocation(m);
+  Ant *ants = (Ant*)malloc(number_of_ants * sizeof(Ant));
   srand(1);//time(NULL));
-  //fprintf(stdout, "Allocating B\n");
-  B = grid_allocation(m);
-  //fprintf(stdout, "Allocating items\n");
-  items = items_allocation(argv[1], &n_items, &s_items);
-  //fprintf(stdout, "Initialize\n");
-  initialize(m, n_ants, n_items, s_items, B, ants, items);
-  //fprintf(stdout, "Simulate\n");
-  simulate(ants, B, m, n_ants, nb, s_items, max_it, kp, kd, a, pick, drop);
-  grid_print(B, m);
+  initialize(m, number_of_ants, number_of_items, elements_per_item, grid, ants, items);
+  simulate(ants, grid, m, number_of_ants, nb, elements_per_item, max_it, kp, kd, a, pick, drop);
+  grid_print(grid, m);
 
   return 0;
 }

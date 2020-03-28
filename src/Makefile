@@ -13,7 +13,8 @@ all:
 	$(CC) $(FLAGS) ant.c -c
 	$(CC) $(FLAGS) distance.c -c
 	$(CC) $(FLAGS) grid.c -c
-	$(CC) $(FLAGS) ACA.o read_csv.o ant.o distance.o grid.o -o $(EXEC)
+	$(CC) $(FLAGS) items.c -c
+	$(CC) $(FLAGS) ACA.o read_csv.o ant.o distance.o grid.o items.o -o $(EXEC)
 	$(RM) *.o
 
 debug: $(EXEC).c
