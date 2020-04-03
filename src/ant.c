@@ -57,7 +57,7 @@ void ant_dynamic(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
   if (ant_has_item(ant) == 1 && cell_has_item(ant->position.x, ant->position.y, grid) == 0)
   {
     f = fdrop(grid, items, ant, nb, m, elements_per_item, a);
-    pd = (fi < kd) ? 2.0*fi : 1.0;
+    pd = (f < kd) ? 2.0*f : 1.0;
     if (pd >= drop)
     {
       grid[ant->position.x][ant->position.y].item_id = ant->item_id;
@@ -70,7 +70,7 @@ void ant_dynamic(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
   if (ant_has_item(ant) == 0 && cell_has_item(ant->position.x, ant->position.y, grid) == 1)
   {
     f = fpick(grid, items, ant, nb, m, elements_per_item, a);
-    pp = powf(kp / (kp + fi), 2);
+    pp = powf(kp / (kp + f), 2);
     if (pp >= pick)
     {
       ant->item_id = grid[ant->position.x][ant->position.y].item_id;
