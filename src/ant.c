@@ -2,14 +2,15 @@
 
 int ant_has_item(Ant *ant)
 {
-  int res = (ant->item_id != -1) ? 0 : 1;
+  int res = (ant->item_id == -1) ? 0 : 1;
   return res;
 }
 
-double f(Cell **grid, Item *items, Ant *ant, const int nb, const int m, const int elements_per_item, const double a)
+double fpick(Cell **grid, Item *items, Ant *ant, const int nb, const int m, const int elements_per_item, const double a)
 {
   int i, j;
   double sum = 0.0, r;
+
   for (i = ant->position.x - nb; i < ant->position.x + nb; i++)
     for (j = ant->position.y - nb; j < ant->position.y + nb; j++)
     {
@@ -17,8 +18,29 @@ double f(Cell **grid, Item *items, Ant *ant, const int nb, const int m, const in
       {
         if (cell_has_item(i, j, grid) == 1)
         {
-          sum += 1 - (euclidian_distance(items[ant->item_id].value, items[grid[i][j].item_id].value, elements_per_item) / a);
-          //sum += manhattan_distance(item_value, grid[i][j].item, s_items);
+          sum += 1 - (euclidian_distance(items[grid[ant->position.x][ant->position.y].item_id].numeric, items[grid[i][j].item_id].numeric, elements_per_item) / a);
+          //sum += manhattan_distance(item_numeric, grid[i][j].item, s_items);
+        }
+      }
+    }
+    r = sum/(nb*nb);
+    return (r > 0) ? r : 0;
+}
+
+double fdrop(Cell **grid, Item *items, Ant *ant, const int nb, const int m, const int elements_per_item, const double a)
+{
+  int i, j;
+  double sum = 0.0, r;
+
+  for (i = ant->position.x - nb; i < ant->position.x + nb; i++)
+    for (j = ant->position.y - nb; j < ant->position.y + nb; j++)
+    {
+      if (i >= 0 && i < m && j >= 0 && j < m)
+      {
+        if (cell_has_item(i, j, grid) == 1)
+        {
+          sum += 1 - (euclidian_distance(items[ant->item_id].numeric, items[grid[i][j].item_id].numeric, elements_per_item) / a);
+          //sum += manhattan_distance(item_numeric, grid[i][j].item, s_items);
         }
       }
     }
@@ -34,9 +56,11 @@ void ant_dynamic(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
   size_t size = sizeof(double)*elements_per_item;
 
   //Probability of the ant drop the item
+  //printf("ant->x: %d, ant->y: %d\n", ant->position.x, ant->position.y);
   if (ant_has_item(ant) == 1 && cell_has_item(ant->position.x, ant->position.y, grid) == 0)
   {
-    fi = f(grid, items, ant, nb, m, elements_per_item, a);
+    //puts("drop");
+    fi = fdrop(grid, items, ant, nb, m, elements_per_item, a);
     //printf("fi = %.2f\n", fi);
     pd = (fi < kd) ? 2.0*fi : 1.0;
     //printf("pd = %.2f\n", pd);
@@ -54,7 +78,8 @@ void ant_dynamic(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
   // Probability of the ant pick the item
   if (ant_has_item(ant) == 0 && cell_has_item(ant->position.x, ant->position.y, grid) == 1)
   {
-    fi = f(grid, items, ant, nb, m, elements_per_item, a);
+    //puts("pick");
+    fi = fpick(grid, items, ant, nb, m, elements_per_item, a);
     //printf("fi = %.2f\n", fi);
     pp = powf(kp / (kp + fi), 2);
     //printf("pp = %.2f\n", pp);
