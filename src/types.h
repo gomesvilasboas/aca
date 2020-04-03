@@ -1,16 +1,11 @@
 #ifndef _TYPES_H_
 #define _TYPES_H_
 
-typedef struct Data
-{
-  int len;
-  float *numeric;
-  char **string;
-} Data;
-
 typedef struct Item
 {
-  double *value;
+  int len;
+  double *numeric;
+  char **string;
   int group;
   int item_id;
 } Item;
