@@ -70,15 +70,7 @@ void grid_print(Cell **grid, const int m)
     for (j = 0; j < m; j++)
     {
       has_item = cell_has_item(i, j, grid);
-      fprintf(stdout, "%d\n", has_item);
-      if (has_item)
-      {
-        //fprintf(stdout, "%d\n", grid[i][j].item_id);
-      }
-      else
-      {
-        //fprintf(stdout, "%d\n", has_item);
-      }
+      printf("%d\n", has_item);
     }
   }
 }

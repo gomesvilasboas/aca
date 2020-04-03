@@ -19,7 +19,6 @@ double fpick(Cell **grid, Item *items, Ant *ant, const int nb, const int m, cons
         if (cell_has_item(i, j, grid) == 1)
         {
           sum += 1 - (euclidian_distance(items[grid[ant->position.x][ant->position.y].item_id].numeric, items[grid[i][j].item_id].numeric, elements_per_item) / a);
-          //sum += manhattan_distance(item_numeric, grid[i][j].item, s_items);
         }
       }
     }
@@ -40,7 +39,6 @@ double fdrop(Cell **grid, Item *items, Ant *ant, const int nb, const int m, cons
         if (cell_has_item(i, j, grid) == 1)
         {
           sum += 1 - (euclidian_distance(items[ant->item_id].numeric, items[grid[i][j].item_id].numeric, elements_per_item) / a);
-          //sum += manhattan_distance(item_numeric, grid[i][j].item, s_items);
         }
       }
     }
@@ -52,25 +50,18 @@ void ant_dynamic(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
                  const int elements_per_item, const double kp, const double kd,
                  const double a, const double pick, const double drop)
 {
-  double pp, pd, fi;
+  double pp, pd, f;
   size_t size = sizeof(double)*elements_per_item;
 
   //Probability of the ant drop the item
-  //printf("ant->x: %d, ant->y: %d\n", ant->position.x, ant->position.y);
   if (ant_has_item(ant) == 1 && cell_has_item(ant->position.x, ant->position.y, grid) == 0)
   {
-    //puts("drop");
-    fi = fdrop(grid, items, ant, nb, m, elements_per_item, a);
-    //printf("fi = %.2f\n", fi);
+    f = fdrop(grid, items, ant, nb, m, elements_per_item, a);
     pd = (fi < kd) ? 2.0*fi : 1.0;
-    //printf("pd = %.2f\n", pd);
-    //fprintf(stderr, "\tDrop; pd: %f\n", pd);
     if (pd >= drop)
     {
-      //printf("Largou . %d\n", ant->item_id);
       grid[ant->position.x][ant->position.y].item_id = ant->item_id;
       ant->item_id = -1;
-      //fprintf(stdout, "\tDroped item %d on cell [%d, %d] with pd = %f.\n", grid[ant->x][ant->y].item_id, ant->x, ant->y, pd);
     }
     return;
   }
@@ -78,18 +69,12 @@ void ant_dynamic(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
   // Probability of the ant pick the item
   if (ant_has_item(ant) == 0 && cell_has_item(ant->position.x, ant->position.y, grid) == 1)
   {
-    //puts("pick");
-    fi = fpick(grid, items, ant, nb, m, elements_per_item, a);
-    //printf("fi = %.2f\n", fi);
+    f = fpick(grid, items, ant, nb, m, elements_per_item, a);
     pp = powf(kp / (kp + fi), 2);
-    //printf("pp = %.2f\n", pp);
-    //fprintf(stderr, "\tPick; pp: %f\n", pp);
     if (pp >= pick)
     {
       ant->item_id = grid[ant->position.x][ant->position.y].item_id;
       grid[ant->position.x][ant->position.y].item_id = -1;
-      //printf("Pegou . %d\n", ant->item_id);
-      //fprintf(stdout, "\tPicked item %d on cell [%d, %d] with pp = %f.\n", ant->item_id, ant->x, ant->y, pp);
     }
     return;
   }
