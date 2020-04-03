@@ -9,7 +9,6 @@
 #include <time.h>
 #include <omp.h>
 #include "types.h"
-#include "read_csv.h"
 
 int ant_has_item(Ant *ant);
 double f(Cell **grid, Item *items, Ant *ant, const int nb, const int m, const int elements_per_item, const double a);
@@ -26,5 +25,6 @@ Cell** grid_allocation(const int m);
 Item* items_allocation(char *filename, int *number_of_items, int *elements_per_item);
 void initialize(const int m, const int number_of_ants, const int number_of_items, const int elements_per_item, Cell **grid, Ant *ants);
 void grid_print(Cell **grid, const int m);
+Item *read_csv(char *filename, int *n_items);
 
 #endif
