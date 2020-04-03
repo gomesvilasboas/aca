@@ -27,7 +27,7 @@ Cell** grid_allocation(const int m)
 /* Initialize grid with ants and items ramdomilly.
   In the first step ants are carryng no items.
 */
-void initialize(const int m, const int number_of_ants, const int number_of_items, const int elements_per_item, Cell **grid, Ant *ants, Item *items)
+void initialize(const int m, const int number_of_ants, const int number_of_items, const int elements_per_item, Cell **grid, Ant *ants)
 {
   int i = 0, j, x, y, ant_prob, item_prob;
   size_t size = sizeof(double)*elements_per_item;
@@ -43,7 +43,6 @@ void initialize(const int m, const int number_of_ants, const int number_of_items
       i++;
     }
   } while(i != number_of_items);
-  free(items);
 
   // Initialize Cell with ants
   i = 0;

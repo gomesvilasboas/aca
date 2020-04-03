@@ -3,6 +3,6 @@
 
 #include "types.h"
 
-Data *read_csv(char *filename, int *n_items);
+Item *read_csv(char *filename, int *n_items);
 
 #endif

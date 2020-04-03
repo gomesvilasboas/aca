@@ -4,18 +4,18 @@
 #include <ctype.h>
 #include "types.h"
 
-void unreference(Data *data, int n)
+void unreference(Item *items, int n)
 {
   int i;
 
   for(i = 0; i < n; i++)
   {
-    data[i].numeric = NULL;
-    data[i].string = NULL;
+    items[i].numeric = NULL;
+    items[i].string = NULL;
   }
 }
 
-int is_numeric(const char * s)
+int is_numeric(const char *s)
 {
     if (s == NULL || *s == '\0' || isspace(*s))
       return 0;
@@ -36,17 +36,17 @@ int get_number_of_lines(char *fileName)
    return atoi(temp);
 }
 
-Data *read_csv(char *filename, int *n_items)
+Item *read_csv(char *filename, int *n_items)
 {
   int n = get_number_of_lines(filename);
-  Data *data = (Data*)malloc(sizeof(Data) * n);
-  int numeric_count = 0, string_count = 0, string_count_total = 0, data_count = 0;
+  Item *items = (Item*)malloc(sizeof(Item) * n);
+  int numeric_count = 0, string_count = 0, string_count_total = 0, items_count = 0;
   FILE *file;
   char *line = NULL, *content = NULL;
   size_t len, string_size = sizeof(char);
   __ssize_t size;
 
-  unreference(data, n);
+  unreference(items, n);
 
   if ((file = fopen(filename, "r")) == NULL) exit(EXIT_FAILURE);
 
@@ -54,32 +54,31 @@ Data *read_csv(char *filename, int *n_items)
   {
     numeric_count = 0;
     string_count = 0;
-    content = strtok(line, " ");
+    content = strtok(line, ",");
     while (content != NULL)
     {
       if (is_numeric(content))
       {
-        data[data_count].numeric = (float*)realloc(data[data_count].numeric, sizeof(float) * (numeric_count + 1));
-        data[data_count].numeric[numeric_count] = atof(content);
+        items[items_count].numeric = (double*)realloc(items[items_count].numeric, sizeof(double) * (numeric_count + 1));
+        items[items_count].numeric[numeric_count] = atof(content);
         numeric_count++;
       }
       /*else
       {
-        data[data_count].string = (char**)realloc(data[data_count].string, sizeof(char));
-        data[data_count].string[string_count] = (char*)malloc(sizeof(content));
-        strcpy(data[data_count].string[string_count], content);
+        items[items_count].string = (char**)realloc(items[items_count].string, sizeof(char));
+        items[items_count].string[string_count] = (char*)malloc(sizeof(content));
+        strcpy(items[items_count].string[string_count], content);
         //string_size += sizeof(content) * (string_count_total + 1);
-        //printf("%s, ", data[data_count].string[string_count]);
+        //printf("%s, ", items[items_count].string[string_count]);
         string_count++;
         //string_count_total++;
       }*/
-      content = strtok(NULL, " ");
+      content = strtok(NULL, ",");
     }
-    data[data_count].len = numeric_count;
-    data_count++;
-    //puts("");
+    items[items_count].len = numeric_count;
+    items_count++;
   }
 
-  *n_items = data_count;
-  return data;
+  *n_items = items_count;
+  return items;
 }

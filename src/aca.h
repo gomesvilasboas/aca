@@ -24,7 +24,7 @@ double euclidian_distance(double *item_Value1, double *item_value2, const int n)
 int cell_has_item(const int x, const int y, Cell **grid);
 Cell** grid_allocation(const int m);
 Item* items_allocation(char *filename, int *number_of_items, int *elements_per_item);
-void initialize(const int m, const int number_of_ants, const int number_of_items, const int elements_per_item, Cell **grid, Ant *ants, Item *items);
+void initialize(const int m, const int number_of_ants, const int number_of_items, const int elements_per_item, Cell **grid, Ant *ants);
 void grid_print(Cell **grid, const int m);
 
 #endif
