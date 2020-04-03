@@ -7,7 +7,6 @@ typedef struct Item
   double *numeric;
   char **string;
   int group;
-  int item_id;
 } Item;
 
 typedef struct Cell
