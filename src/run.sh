@@ -1,6 +1,25 @@
 #!/bin/bash
 
-m=100
-#./ACA  filename            m     n_ants  max_it  nb  kp   kd    a    pick  drop
-./ACA   ../dataset/iris.data ${m}  70      100000  15  0.1  0.15  100  0.4   0.3  > ACA.out
-python plot.py ${m} ACA.out
+kp=0.1
+kd=0.15
+max_it=100000
+nb=10
+
+for pick in 0.2 0.3 0.4 0.5 0.6; do
+  for drop in 0.2 0.3 0.4 0.5 0.6; do
+    for n_ants in {40..101..20}; do
+      #for max_it in {100000..1000000..100000}; do
+        #for nb in {5..15..5}; do
+          for m in {40..101..20}; do
+            for a in 1 100; do
+              ./ACA ../dataset/iris.data ${m} ${n_ants} ${max_it} ${nb} ${kp} ${kd} ${a} ${pick} ${drop} > ACA.out
+              python plot.py ${m} ${n_ants} ${max_it} ${nb} ${kp} ${kd} ${a} ${pick} ${drop} ACA.out
+            done
+          done
+        #done
+      #done
+    done
+  done
+done
+
+#./ACA ../dataset/iris.data 100 50 100000 5 ${kp} ${kd} 1 0.4 0.2 > ACA.out
