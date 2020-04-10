@@ -26,5 +26,8 @@ Item* items_allocation(char *filename, int *number_of_items, int *elements_per_i
 void initialize(const int m, const int number_of_ants, const int number_of_items, const int elements_per_item, Cell **grid, Ant *ants);
 void grid_print(Cell **grid, const int m);
 Item *read_csv(char *filename, int *n_items);
+int label_items(Cell **grid, int m, Item *items, int r);
+void print_items_label(Item *items, int number_of_items);
+void print_items_label(Item *items, int number_of_items, int label);
 
 #endif
