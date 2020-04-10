@@ -15,13 +15,12 @@ void unreference(Item *items, int n)
   }
 }
 
-int is_numeric(const char *s)
+double is_numeric(const char *s)
 {
-    if (s == NULL || *s == '\0' || isspace(*s))
-      return 0;
-    char * p;
-    strtod (s, &p);
-    return *p == '\0';
+  if (s == NULL || *s == '\0' || isspace(*s))
+    return (double)0;
+  char *p;
+  return strtod (s, &p);;
 }
 
 int get_number_of_lines(char *fileName)
@@ -44,7 +43,7 @@ Item *read_csv(char *filename, int *n_items)
   FILE *file;
   char *line = NULL, *content = NULL;
   size_t len, string_size = sizeof(char);
-  __ssize_t size;
+  size_t size;
 
   unreference(items, n);
 
@@ -76,6 +75,7 @@ Item *read_csv(char *filename, int *n_items)
       content = strtok(NULL, ",");
     }
     items[items_count].len = numeric_count;
+    items[items_count].label = -1;
     items_count++;
   }
 
