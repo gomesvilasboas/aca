@@ -11,24 +11,6 @@ int label_items(Cell **grid, int m, Item *items, int r)
       item_grouped = 0;
       if (cell_has_item(i, j, grid))
       {
-        if (i == 0 && j == 0) // First position on grid
-        {
-          items[grid[i][j].item_id].label = group_id;
-          item_grouped = 1;
-          continue;
-        }
-        if (j != 0 && cell_has_item(i, j-1, grid))// Previous element label check
-        {
-          items[grid[i][j].item_id].label = items[grid[i][j-1].item_id].label;
-          item_grouped = 1;
-          continue;
-        }
-        if (i != 0 && cell_has_item(i-1, j, grid)) // Above element label check
-        {
-          items[grid[i][j].item_id].label = items[grid[i-1][j].item_id].label;
-          item_grouped = 1;
-          continue;
-        }
         for (k = i-r; k < i+r; k++)
         {
           for (l = j-r; l < j+r; l++)
@@ -45,16 +27,17 @@ int label_items(Cell **grid, int m, Item *items, int r)
                 break;
               }
             }
-          }
-        }
+          }// End for l
+        } // End for k
         if (item_grouped == 0)
         {
           group_id++;
           items[grid[i][j].item_id].label = group_id; // First group's element
         }
-      }
-    }
-  }
+      }// End if cell_has_item
+    }// End for j
+  }// End for i
+
   return group_id;
 }
 
