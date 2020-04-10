@@ -34,12 +34,8 @@ void terminate(Ant *ants, Cell **grid, int number_of_ants)
   int i;
 
   for (i = 0; i < number_of_ants; i++)
-  {
     if(ant_has_item(&ants[i]))
-    {
       grid[ants[i].position.x][ants[i].position.y].item_id = ants[i].item_id;
-    }
-  }
 }
 
 int main (int argc, char **argv)
@@ -65,17 +61,28 @@ int main (int argc, char **argv)
 
   // A razão de proporcionalidade de m -> n_ants e n_items é de uma ordem de grandeza.
   // A grade nao necessariamente tem que ser quadrada. Fazer essa alteracao
-  int m = atoi(argv[2]), number_of_ants = atoi(argv[3]), max_it = atoi(argv[4]), nb = atoi(argv[5]), number_of_items, elements_per_item;
+  int m = atoi(argv[2]), number_of_ants = atoi(argv[3]), max_it = atoi(argv[4]),
+      nb = atoi(argv[5]), r = atoi(argv[11]), label = atoi(argv[12]),
+      number_of_items, elements_per_item, number_of_groups;
   double kp = atof(argv[6]), kd = atof(argv[7]), a = atof(argv[8]), pick = atof(argv[9]), drop = atof(argv[10]);
   double st;
   Item *items = read_csv(argv[1], &number_of_items);
   Cell **grid = grid_allocation(m);
   Ant *ants = (Ant*)malloc(number_of_ants * sizeof(Ant));
   srand(1);//time(NULL));
+  elements_per_item = items[0].len;
   initialize(m, number_of_ants, number_of_items, elements_per_item, grid, ants);
   simulate(ants, grid, items, m, number_of_ants, nb, elements_per_item, max_it, kp, kd, a, pick, drop);
   terminate(ants, grid, number_of_ants);
-  grid_print(grid, m);
+  //grid_print(grid, m);
+  number_of_groups = label_items(grid, m, items, r);
+  printf("Number of groups: %d\n", number_of_groups);
+  //print_items_label(items, number_of_items);
+  for (int i = 1; i <= number_of_groups; i++)
+  {
+    printf("\t\tGroup -> %d\n", i);
+    print_items_label(items, number_of_items, i);
+  }
 
   return 0;
 }
