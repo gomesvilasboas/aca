@@ -1,5 +1,5 @@
-CC=gcc
-FLAGS=-lm -fopenmp -O3 -Wimplicit-function-declaration -Wunused-result -ffast-math -march=native
+CC=g++
+FLAGS=-lm -fopenmp -O3 -ffast-math -march=native# -fpermissive
 DEBUGFLAGS=-g
 RM=rm -f
 
@@ -13,7 +13,8 @@ all:
 	$(CC) $(FLAGS) ant.c -c
 	$(CC) $(FLAGS) distance.c -c
 	$(CC) $(FLAGS) grid.c -c
-	$(CC) $(FLAGS) ACA.o read_csv.o ant.o distance.o grid.o -o $(EXEC)
+	$(CC) $(FLAGS) group.c -c
+	$(CC) $(FLAGS) ACA.o read_csv.o ant.o distance.o grid.o group.o -o $(EXEC)
 	$(RM) *.o
 
 debug: $(EXEC).c
