@@ -65,12 +65,11 @@ void grid_print(Cell **grid, const int m)
 {
   int i, j;
   int has_item;
+
   for (i = 0; i < m; i++)
-  {
     for (j = 0; j < m; j++)
     {
       has_item = cell_has_item(i, j, grid);
       printf("%d\n", has_item);
     }
-  }
 }
