@@ -6,7 +6,7 @@ typedef struct Item
   int len;
   double *numeric;
   char **string;
-  int group;
+  int label;
 } Item;
 
 typedef struct Cell
