@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "types.h"
 
+#pragma acc routine vector
 void unreference(Item *items, int n)
 {
   int i;
@@ -15,6 +16,7 @@ void unreference(Item *items, int n)
   }
 }
 
+#pragma acc routine seq
 double is_numeric(const char *s)
 {
   if (s == NULL || *s == '\0' || isspace(*s))

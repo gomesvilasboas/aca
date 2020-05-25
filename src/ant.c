@@ -1,6 +1,6 @@
 #include "aca.h"
 
-#pragma acc routine vector
+#pragma acc routine seq
 int ant_has_item(Ant *ant)
 {
   int res = (ant->item_id == -1) ? 0 : 1;
@@ -14,7 +14,7 @@ double fpick(Cell **grid, Item *items, Ant *ant, const int nb, const int m, cons
 
   #pragma acc kernels
   {
-    #pragma acc loop independent reduction(+:sum)
+    #pragma acc loop independent reduction(+:sum) gang(4)
     for (i = ant->position.x - nb; i < ant->position.x + nb; i++)
       for (j = ant->position.y - nb; j < ant->position.y + nb; j++)
         if (i >= 0 && i < m && j >= 0 && j < m)
@@ -30,9 +30,9 @@ double fdrop(Cell **grid, Item *items, Ant *ant, const int nb, const int m, cons
   int i, j;
   double sum = 0.0, r;
 
-  #pragma acc parallel
+  #pragma acc kernels
   {
-    #pragma acc loop reduction(+:sum)
+    #pragma acc loop independent reduction(+:sum) gang(4)
     for (i = ant->position.x - nb; i < ant->position.x + nb; i++)
       for (j = ant->position.y - nb; j < ant->position.y + nb; j++)
         if (i >= 0 && i < m && j >= 0 && j < m)

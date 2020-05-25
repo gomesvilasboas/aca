@@ -2,7 +2,8 @@
 CC=pgc++
 #FLAGS=-lm -fopenmp -O3 -ffast-math -march=native# -fpermissive
 FLAGS=-lm -mp -O4 -fast -acc=verystrict -Minfo=all -ta=multicore#,tesla:managed
-DEBUGFLAGS=-pg
+#FLAGS=-lm -O0 -Minfo=all -ta=host
+DEBUGFLAGS=#-pg
 RM=rm -f
 
 EXEC=../bin/ACA
