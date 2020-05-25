@@ -21,6 +21,6 @@ for i in range(n):
     aa[i,j] = csv[i*n + j]
 
 plt.matshow(aa)
-#plt.show()
-title = "/home/fabricio/Documents/ACA/dataset_iris_m_" + m + "_ants_" + n_ants + "_maxit_" + max_it + "_nb_" + nb + "_kp_" + kp + "_kd_" + kd + "_a_" + a + "_pick_" + pick + "_drop_" + drop + ".png"
-plt.savefig(title)
+plt.show()
+#title = "/home/fabricio/Documents/ACA/dataset_iris_m_" + m + "_ants_" + n_ants + "_maxit_" + max_it + "_nb_" + nb + "_kp_" + kp + "_kd_" + kd + "_a_" + a + "_pick_" + pick + "_drop_" + drop + ".png"
+#plt.savefig(title)

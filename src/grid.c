@@ -1,5 +1,6 @@
 #include "aca.h"
 
+#pragma acc routine seq
 int cell_has_item(const int x, const int y, Cell **grid)
 {
   int res = (grid[x][y].item_id == -1) ? 0 : 1;
@@ -65,12 +66,11 @@ void grid_print(Cell **grid, const int m)
 {
   int i, j;
   int has_item;
+
   for (i = 0; i < m; i++)
-  {
     for (j = 0; j < m; j++)
     {
       has_item = cell_has_item(i, j, grid);
       printf("%d\n", has_item);
     }
-  }
 }

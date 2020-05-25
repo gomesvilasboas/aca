@@ -1,5 +1,6 @@
 #include "aca.h"
 
+#pragma acc routine vector
 int ant_has_item(Ant *ant)
 {
   int res = (ant->item_id == -1) ? 0 : 1;
@@ -11,19 +12,17 @@ double fpick(Cell **grid, Item *items, Ant *ant, const int nb, const int m, cons
   int i, j;
   double sum = 0.0, r;
 
-  for (i = ant->position.x - nb; i < ant->position.x + nb; i++)
-    for (j = ant->position.y - nb; j < ant->position.y + nb; j++)
-    {
-      if (i >= 0 && i < m && j >= 0 && j < m)
-      {
-        if (cell_has_item(i, j, grid) == 1)
-        {
-          sum += 1 - (euclidian_distance(items[grid[ant->position.x][ant->position.y].item_id].numeric, items[grid[i][j].item_id].numeric, elements_per_item) / a);
-        }
-      }
-    }
-    r = sum/(nb*nb);
-    return (r > 0) ? r : 0;
+  #pragma acc kernels
+  {
+    #pragma acc loop independent reduction(+:sum)
+    for (i = ant->position.x - nb; i < ant->position.x + nb; i++)
+      for (j = ant->position.y - nb; j < ant->position.y + nb; j++)
+        if (i >= 0 && i < m && j >= 0 && j < m)
+          if (cell_has_item(i, j, grid) == 1)
+            sum += 1 - (euclidian_distance(items[grid[ant->position.x][ant->position.y].item_id].numeric, items[grid[i][j].item_id].numeric, elements_per_item) / a);
+  }
+  r = sum/(nb*nb);
+  return (r > 0) ? r : 0;
 }
 
 double fdrop(Cell **grid, Item *items, Ant *ant, const int nb, const int m, const int elements_per_item, const double a)
@@ -31,19 +30,17 @@ double fdrop(Cell **grid, Item *items, Ant *ant, const int nb, const int m, cons
   int i, j;
   double sum = 0.0, r;
 
-  for (i = ant->position.x - nb; i < ant->position.x + nb; i++)
-    for (j = ant->position.y - nb; j < ant->position.y + nb; j++)
-    {
-      if (i >= 0 && i < m && j >= 0 && j < m)
-      {
-        if (cell_has_item(i, j, grid) == 1)
-        {
-          sum += 1 - (euclidian_distance(items[ant->item_id].numeric, items[grid[i][j].item_id].numeric, elements_per_item) / a);
-        }
-      }
-    }
-    r = sum/(nb*nb);
-    return (r > 0) ? r : 0;
+  #pragma acc parallel
+  {
+    #pragma acc loop reduction(+:sum)
+    for (i = ant->position.x - nb; i < ant->position.x + nb; i++)
+      for (j = ant->position.y - nb; j < ant->position.y + nb; j++)
+        if (i >= 0 && i < m && j >= 0 && j < m)
+          if (cell_has_item(i, j, grid) == 1)
+            sum += 1 - (euclidian_distance(items[ant->item_id].numeric, items[grid[i][j].item_id].numeric, elements_per_item) / a);
+  }
+  r = sum/(nb*nb);
+  return (r > 0) ? r : 0;
 }
 
 void ant_dynamic(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
@@ -86,6 +83,8 @@ void move_ant(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
 {
   int direction, moved = 0, stuck = 0, step = 5;
 
+  //printf("m: %d, nb: %d, elements_per_item: %d, kp: %.2f, kd: %.2f, a: %.2f, pick: %.2f. drop: %.2f\n", m, nb, elements_per_item, kp, kd, a, pick, drop);
+
   do
   {
     direction = rand()%4;
@@ -95,7 +94,6 @@ void move_ant(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
       case 0: // Move up [x-1,y];
         stuck += 1;
         if ((ant->position.x - step) >= 0)
-        {
           if (grid[ant->position.x-step][ant->position.y].has_ant == 0)
           {
             grid[ant->position.x][ant->position.y].has_ant = 0;
@@ -103,12 +101,10 @@ void move_ant(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
             grid[ant->position.x][ant->position.y].has_ant = 1;
             moved = 1;
           }
-        }
       break;
       case 1: // Move down [x+1,y];
         stuck += 1;
         if ((ant->position.x + step) < m)
-        {
           if (grid[ant->position.x+step][ant->position.y].has_ant == 0)
           {
             grid[ant->position.x][ant->position.y].has_ant = 0;
@@ -116,12 +112,10 @@ void move_ant(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
             grid[ant->position.x][ant->position.y].has_ant = 1;
             moved = 1;
           }
-        }
       break;
       case 2: // Move right [x,y+1];
         stuck += 1;
         if ((ant->position.y + step) < m)
-        {
           if (grid[ant->position.x][ant->position.y+1].has_ant == 0)
           {
             grid[ant->position.x][ant->position.y].has_ant = 0;
@@ -129,12 +123,10 @@ void move_ant(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
             grid[ant->position.x][ant->position.y].has_ant = 1;
             moved = 1;
           }
-        }
       break;
       case 3: // Move left [x,y-1];
         stuck += 1;
         if ((ant->position.y - step) >= 0)
-        {
           if (grid[ant->position.x][ant->position.y-step].has_ant == 0)
           {
             grid[ant->position.x][ant->position.y].has_ant = 0;
@@ -142,7 +134,6 @@ void move_ant(Ant *ant, Cell **grid, Item *items, const int m, const int nb,
             grid[ant->position.x][ant->position.y].has_ant = 1;
             moved = 1;
           }
-        }
       break;
     }
     ant_dynamic(ant, grid, items, m, nb, elements_per_item, kp, kd, a, pick, drop);
